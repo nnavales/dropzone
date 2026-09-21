@@ -1,0 +1,17 @@
+settings:
+  wait_seconds: 2
+  conflict: rename
+zones:
+  - name: downloads
+    path: ~/Downloads
+    rules:
+      - name: images
+        match:
+          extensions: [jpg, png]
+        action:
+          move: ~/Pictures
+      - name: tmp
+        match:
+          glob: ["*.tmp"]
+        action:
+          delete: true

@@ -1,0 +1,12 @@
+settings:
+  wait_seconds: 1
+zones:
+  - name: t
+    path: /tmp
+    rules:
+      - name: r
+        match:
+          glob: ["*.x"]
+        action:
+          move: /a
+          copy: /b

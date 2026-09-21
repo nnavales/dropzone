@@ -1,0 +1,10 @@
+settings:
+  wait_seconds: 1
+zones:
+  - name: t
+    rules:
+      - name: r
+        match:
+          glob: ["*.x"]
+        action:
+          move: /a
