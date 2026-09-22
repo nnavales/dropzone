@@ -1,6 +1,6 @@
 settings:
-  wait_seconds: 2
-  conflict: rename
+  stable_for_seconds: 2
+  on_conflict: rename
 zones:
   - name: downloads
     path: ~/Downloads

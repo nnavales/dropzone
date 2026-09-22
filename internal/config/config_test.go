@@ -24,6 +24,9 @@ var badConflictYAML []byte
 //go:embed testdata/invalid/missing_path.yml
 var missingPathYAML []byte
 
+//go:embed testdata/invalid/relative_path.yml
+var relativePathYAML []byte
+
 //go:embed testdata/invalid/empty_match.yml
 var emptyMatchYAML []byte
 
@@ -39,14 +42,14 @@ func TestParseValid(t *testing.T) {
 		t.Fatalf("Parse() error = %v", err)
 	}
 
-	if cfg.Settings.WaitSeconds != 2 || cfg.Settings.Conflict != "rename" {
+	if cfg.Settings.StableForSeconds != 2 || cfg.Settings.OnConflict != "rename" {
 		t.Errorf("settings = %+v, want {2 rename}", cfg.Settings)
 	}
 	rules := cfg.Zones[0].Rules
 	if len(rules) != 2 {
 		t.Fatalf("len(rules) = %d, want 2", len(rules))
 	}
-	if rules[1].Action.Kind != ActionDelete {
+	if rules[1].Action.Kind != "delete" {
 		t.Errorf("delete action did not parse, kind = %q", rules[1].Action.Kind)
 	}
 }
@@ -57,11 +60,21 @@ func TestParseDefaults(t *testing.T) {
 		t.Fatalf("Parse() error = %v", err)
 	}
 
-	if cfg.Settings.WaitSeconds != 2 {
-		t.Errorf("WaitSeconds = %d, want default 2", cfg.Settings.WaitSeconds)
+	if cfg.Settings.StableForSeconds != 2 {
+		t.Errorf("StableForSeconds = %d, want default 2", cfg.Settings.StableForSeconds)
 	}
-	if cfg.Settings.Conflict != "rename" {
-		t.Errorf("Conflict = %q, want default rename", cfg.Settings.Conflict)
+	if cfg.Settings.OnConflict != "rename" {
+		t.Errorf("OnConflict = %q, want default rename", cfg.Settings.OnConflict)
+	}
+}
+
+func TestParseEmptyZones(t *testing.T) {
+	cfg, err := Parse(emptyZonesYAML)
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	if len(cfg.Zones) != 0 {
+		t.Errorf("len(zones) = %d, want 0", len(cfg.Zones))
 	}
 }
 
@@ -71,10 +84,10 @@ func TestParseInvalid(t *testing.T) {
 		yml     []byte
 		wantErr string
 	}{
-		{"empty zones", emptyZonesYAML, "zones must not be empty"},
-		{"negative wait", negativeWaitYAML, "settings.wait_seconds"},
-		{"bad conflict", badConflictYAML, "settings.conflict"},
+		{"negative wait", negativeWaitYAML, "settings.stable_for_seconds"},
+		{"bad conflict", badConflictYAML, "settings.on_conflict"},
 		{"missing path", missingPathYAML, "path is required"},
+		{"relative path", relativePathYAML, "path must be absolute"},
 		{"empty match", emptyMatchYAML, "extensions|glob"},
 		{"empty action", emptyActionYAML, "one of move|copy|rename|run|delete is required"},
 		{"two actions in one entry", twoActionsYAML, "only one of"},

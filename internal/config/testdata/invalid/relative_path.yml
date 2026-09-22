@@ -2,11 +2,10 @@ settings:
   stable_for_seconds: 1
 zones:
   - name: t
-    path: /tmp
+    path: relative/dir
     rules:
       - name: r
         match:
-          glob: ["*.x"]
+          extensions: [jpg]
         action:
-          move: /a
-          copy: /b
+          delete: true

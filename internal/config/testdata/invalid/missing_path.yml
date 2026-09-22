@@ -1,5 +1,5 @@
 settings:
-  wait_seconds: 1
+  stable_for_seconds: 1
 zones:
   - name: t
     rules:

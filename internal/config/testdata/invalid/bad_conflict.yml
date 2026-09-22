@@ -1,6 +1,6 @@
 settings:
-  wait_seconds: 1
-  conflict: boom
+  stable_for_seconds: 1
+  on_conflict: boom
 zones:
   - name: t
     path: /tmp
