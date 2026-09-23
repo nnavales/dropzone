@@ -10,7 +10,7 @@ type Run struct {
 	Command string
 }
 
-// Execute performs the command execution.
+// Execute runs Command, which the engine resolves.
 func (r Run) Execute(ctx context.Context, source string) error {
-	return exec.CommandContext(ctx, "sh", "-c", renderCommand(r.Command, source)).Run()
+	return exec.CommandContext(ctx, "sh", "-c", r.Command).Run()
 }

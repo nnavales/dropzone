@@ -11,10 +11,10 @@ import (
 // Copy copies a file to a destination directory.
 type Copy struct {
 	Destination string
-	Conflict    ConflictPolicy
+	Conflict    string
 }
 
-// Execute performs the copy operation.
+// Execute copies source into Destination.
 func (c Copy) Execute(ctx context.Context, source string) error {
 	dst := filepath.Join(c.Destination, filepath.Base(source))
 
@@ -25,12 +25,12 @@ func (c Copy) Execute(ctx context.Context, source string) error {
 
 	if conflict {
 		switch c.Conflict {
-		case ConflictSkip:
+		case "skip":
 			return nil
 
-		case ConflictOverwrite:
+		case "overwrite":
 
-		case ConflictRename:
+		case "rename":
 			dst, err = renameDestination(dst)
 			if err != nil {
 				return err

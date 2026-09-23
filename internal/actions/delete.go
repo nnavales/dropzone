@@ -8,7 +8,7 @@ import (
 // Delete removes a file from disk.
 type Delete struct{}
 
-// Execute performs the delete operation.
+// Execute removes source.
 func (d Delete) Execute(ctx context.Context, source string) error {
 	return os.Remove(source)
 }

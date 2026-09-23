@@ -51,7 +51,7 @@ func TestCopy(t *testing.T) {
 		dstDir := t.TempDir()
 		writeTempFile(t, dstDir, "a.txt", "old")
 
-		if err := (Copy{Destination: dstDir, Conflict: ConflictSkip}).Execute(ctx, src); err != nil {
+		if err := (Copy{Destination: dstDir, Conflict: "skip"}).Execute(ctx, src); err != nil {
 			t.Fatal(err)
 		}
 
@@ -66,7 +66,7 @@ func TestCopy(t *testing.T) {
 		dstDir := t.TempDir()
 		writeTempFile(t, dstDir, "a.txt", "old")
 
-		if err := (Copy{Destination: dstDir, Conflict: ConflictOverwrite}).Execute(ctx, src); err != nil {
+		if err := (Copy{Destination: dstDir, Conflict: "overwrite"}).Execute(ctx, src); err != nil {
 			t.Fatal(err)
 		}
 
@@ -84,7 +84,7 @@ func TestCopy(t *testing.T) {
 		dstDir := t.TempDir()
 		writeTempFile(t, dstDir, "a.txt", "old")
 
-		if err := (Copy{Destination: dstDir, Conflict: ConflictRename}).Execute(ctx, src); err != nil {
+		if err := (Copy{Destination: dstDir, Conflict: "rename"}).Execute(ctx, src); err != nil {
 			t.Fatal(err)
 		}
 

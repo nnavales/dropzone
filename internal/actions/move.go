@@ -10,10 +10,10 @@ import (
 // Move moves a file to a destination directory.
 type Move struct {
 	Destination string
-	Conflict    ConflictPolicy
+	Conflict    string
 }
 
-// Execute performs the move operation.
+// Execute moves source into Destination.
 func (m Move) Execute(ctx context.Context, source string) error {
 	dst := filepath.Join(m.Destination, filepath.Base(source))
 
@@ -24,13 +24,13 @@ func (m Move) Execute(ctx context.Context, source string) error {
 
 	if conflict {
 		switch m.Conflict {
-		case ConflictSkip:
+		case "skip":
 			return nil
 
-		case ConflictOverwrite:
-			// skip since rename will overwrite.
+		case "overwrite":
+			// Nothing to do: os.Rename overwrites.
 
-		case ConflictRename:
+		case "rename":
 			dst, err = renameDestination(dst)
 			if err != nil {
 				return err

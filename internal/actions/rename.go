@@ -10,12 +10,12 @@ import (
 // Rename renames a file to a new name within the same directory.
 type Rename struct {
 	Name     string
-	Conflict ConflictPolicy
+	Conflict string
 }
 
-// Execute performs the rename operation.
+// Execute renames source to Name, which the engine resolves.
 func (r Rename) Execute(ctx context.Context, source string) error {
-	dst := filepath.Join(filepath.Dir(source), renderName(r.Name, source))
+	dst := filepath.Join(filepath.Dir(source), r.Name)
 
 	conflict, err := hasConflict(dst)
 	if err != nil {
@@ -24,12 +24,12 @@ func (r Rename) Execute(ctx context.Context, source string) error {
 
 	if conflict {
 		switch r.Conflict {
-		case ConflictSkip:
+		case "skip":
 			return nil
 
-		case ConflictOverwrite:
+		case "overwrite":
 
-		case ConflictRename:
+		case "rename":
 			dst, err = renameDestination(dst)
 			if err != nil {
 				return err

@@ -33,7 +33,7 @@ func TestMove(t *testing.T) {
 		dstDir := t.TempDir()
 		writeTempFile(t, dstDir, "a.txt", "old")
 
-		if err := (Move{Destination: dstDir, Conflict: ConflictSkip}).Execute(ctx, src); err != nil {
+		if err := (Move{Destination: dstDir, Conflict: "skip"}).Execute(ctx, src); err != nil {
 			t.Fatal(err)
 		}
 
@@ -51,7 +51,7 @@ func TestMove(t *testing.T) {
 		dstDir := t.TempDir()
 		writeTempFile(t, dstDir, "a.txt", "old")
 
-		if err := (Move{Destination: dstDir, Conflict: ConflictOverwrite}).Execute(ctx, src); err != nil {
+		if err := (Move{Destination: dstDir, Conflict: "overwrite"}).Execute(ctx, src); err != nil {
 			t.Fatal(err)
 		}
 
@@ -66,7 +66,7 @@ func TestMove(t *testing.T) {
 		dstDir := t.TempDir()
 		writeTempFile(t, dstDir, "a.txt", "old")
 
-		if err := (Move{Destination: dstDir, Conflict: ConflictRename}).Execute(ctx, src); err != nil {
+		if err := (Move{Destination: dstDir, Conflict: "rename"}).Execute(ctx, src); err != nil {
 			t.Fatal(err)
 		}
 

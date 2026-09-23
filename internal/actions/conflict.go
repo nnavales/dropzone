@@ -8,18 +8,6 @@ import (
 	"path/filepath"
 )
 
-// ConflictPolicy defines how to handle file name conflicts.
-type ConflictPolicy string
-
-const (
-	// ConflictSkip ignores the operation when a conflict exists.
-	ConflictSkip ConflictPolicy = "skip"
-	// ConflictOverwrite replaces the existing file.
-	ConflictOverwrite ConflictPolicy = "overwrite"
-	// ConflictRename creates a new file with a numeric suffix.
-	ConflictRename ConflictPolicy = "rename"
-)
-
 func hasConflict(dst string) (bool, error) {
 	_, err := os.Stat(dst)
 

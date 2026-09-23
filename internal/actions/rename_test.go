@@ -31,7 +31,7 @@ func TestRename(t *testing.T) {
 		src := writeTempFile(t, dir, "a.txt", "new")
 		writeTempFile(t, dir, "b.txt", "old")
 
-		if err := (Rename{Name: "b.txt", Conflict: ConflictSkip}).Execute(ctx, src); err != nil {
+		if err := (Rename{Name: "b.txt", Conflict: "skip"}).Execute(ctx, src); err != nil {
 			t.Fatal(err)
 		}
 
@@ -48,7 +48,7 @@ func TestRename(t *testing.T) {
 		src := writeTempFile(t, dir, "a.txt", "new")
 		writeTempFile(t, dir, "b.txt", "old")
 
-		if err := (Rename{Name: "b.txt", Conflict: ConflictOverwrite}).Execute(ctx, src); err != nil {
+		if err := (Rename{Name: "b.txt", Conflict: "overwrite"}).Execute(ctx, src); err != nil {
 			t.Fatal(err)
 		}
 
@@ -62,7 +62,7 @@ func TestRename(t *testing.T) {
 		src := writeTempFile(t, dir, "a.txt", "new")
 		writeTempFile(t, dir, "b.txt", "old")
 
-		if err := (Rename{Name: "b.txt", Conflict: ConflictRename}).Execute(ctx, src); err != nil {
+		if err := (Rename{Name: "b.txt", Conflict: "rename"}).Execute(ctx, src); err != nil {
 			t.Fatal(err)
 		}
 
