@@ -28,7 +28,7 @@ type pendingFile struct {
 	stableSince time.Time
 }
 
-// NewWatcher is the constructor of Watcher.
+// New creates a Watcher over the given directories.
 func New(stableFor time.Duration, paths ...string) (*Watcher, error) {
 	if stableFor <= 0 {
 		return nil, fmt.Errorf("stableFor must be greater than 0")
