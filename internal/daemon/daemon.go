@@ -1,64 +1,74 @@
+// Package daemon supervises an engine over config.
 package daemon
 
 import (
 	"context"
-	"fmt"
-	"time"
+	"log/slog"
+	"reflect"
 
-	"github.com/nnavales/dropzone/internal/actions"
 	"github.com/nnavales/dropzone/internal/config"
+	"github.com/nnavales/dropzone/internal/engine"
 	"github.com/nnavales/dropzone/internal/watcher"
 )
 
-// Daemon holds runtime zones and orchestrates watching + execution.
+// Daemon supervises one engine instance at a time.
 type Daemon struct {
-	zones     []Zone
-	stableFor time.Duration
+	cfgPath string
+	cfg     config.Config
 }
 
-// New builds runtime zones from config and returns a Daemon.
-func New(cfg config.Config) (*Daemon, error) {
-	conflict := actions.ConflictPolicy(cfg.Settings.Conflict)
-
-	zones := make([]Zone, 0, len(cfg.Zones))
-	for i := range cfg.Zones {
-		z, err := newZone(cfg.Zones[i], conflict)
-		if err != nil {
-			return nil, fmt.Errorf("zones[%d] (%q): %w", i, cfg.Zones[i].Name, err)
-		}
-		zones = append(zones, z)
-	}
-
-	return &Daemon{
-		zones:     zones,
-		stableFor: time.Duration(cfg.Settings.WaitSeconds) * time.Second,
-	}, nil
+// New returns a Daemon.
+func New(cfgPath string, cfg config.Config) *Daemon {
+	return &Daemon{cfgPath: cfgPath, cfg: cfg}
 }
 
-// Start creates one watcher for all zone paths and processes stable files.
-func (d *Daemon) Start(ctx context.Context) error {
-	paths := make([]string, 0, len(d.zones))
-	for _, z := range d.zones {
-		paths = append(paths, z.path)
-	}
-
-	w, err := watcher.New(d.stableFor, paths...)
+// Run starts the daemon and manages its dependencies.
+func (d *Daemon) Run(ctx context.Context) error {
+	cfgWatcher, err := watcher.NewConfigWatcher(d.cfgPath)
 	if err != nil {
 		return err
 	}
+	go cfgWatcher.Run(ctx)
 
-	go w.Run(ctx)
+	current := engine.New(d.cfg)
 
 	for {
+		engineCtx, cancel := context.WithCancel(ctx)
+		engineDone := make(chan error, 1)
+
+		go func() {
+			engineDone <- current.Run(engineCtx)
+		}()
+
 		select {
 		case <-ctx.Done():
-			return ctx.Err()
-		case path, ok := <-w.Events():
-			if !ok {
-				return nil
+			cancel()
+			<-engineDone
+			return nil
+
+		case err := <-engineDone:
+			cancel()
+			return err
+
+		case <-cfgWatcher.Events():
+			cancel()
+			<-engineDone
+
+			next, err := config.Load(d.cfgPath)
+			if err != nil {
+				slog.Error("failed to reload config", "err", err)
+				continue
 			}
-			d.handleFile(ctx, path)
+
+			if reflect.DeepEqual(next, d.cfg) {
+				slog.Debug("config unchanged")
+				continue
+			}
+
+			d.cfg = next
+			current = engine.New(next)
+
+			slog.Info("config reloaded")
 		}
 	}
 }
-
