@@ -13,8 +13,9 @@ import (
 
 func newInitCommand() *cobra.Command {
 	return &cobra.Command{
-		Use:   "init",
-		Short: "Scaffold the default config file.",
+		Use:          "init",
+		Short:        "Scaffold the default config file.",
+		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runInit(resolveConfigPath(dev))
 		},

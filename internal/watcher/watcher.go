@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -87,6 +88,9 @@ func (w *Watcher) Run(ctx context.Context) {
 
 		case event := <-w.watcher.Events:
 			w.handleEvent(event)
+
+		case err := <-w.watcher.Errors:
+			slog.Warn("watch error", "err", err)
 
 		case <-ticker.C:
 			w.checkPending(time.Now())

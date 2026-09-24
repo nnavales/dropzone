@@ -2,6 +2,7 @@ package watcher
 
 import (
 	"context"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"time"
@@ -60,6 +61,9 @@ func (w *ConfigWatcher) Run(ctx context.Context) {
 			if event.Name == w.path {
 				pending = true
 			}
+
+		case err := <-w.watcher.Errors:
+			slog.Warn("watch config error", "err", err)
 
 		case <-ticker.C:
 			if !pending {

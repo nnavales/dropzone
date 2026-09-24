@@ -31,7 +31,7 @@ func (a *Action) UnmarshalYAML(value *yaml.Node) error {
 		case "move", "copy", "rename", "run":
 			s, ok := v.(string)
 			if !ok || strings.TrimSpace(s) == "" {
-				return fmt.Errorf("action %q requires a non-empty string", kind)
+				return fmt.Errorf("action %q requires a non-empty target", kind)
 			}
 			a.Kind = kind
 			a.Target = s
