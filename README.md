@@ -67,6 +67,7 @@ dropzone service uninstall
 | Command                      | Description                        |
 | ---------------------------- | ---------------------------------- |
 | `dropzone init`              | Create the config file             |
+| `dropzone validate`          | Validate the config file           |
 | `dropzone run`               | Start the daemon in the foreground |
 | `dropzone service <command>` | Manage the systemd user service    |
 | `dropzone version`           | Print the version                  |
