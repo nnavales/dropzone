@@ -1,0 +1,19 @@
+settings:
+  stable_for_seconds: 1
+zones:
+  - name: a
+    path: /tmp/dz
+    rules:
+      - name: r
+        match:
+          extensions: [jpg]
+        action:
+          delete: true
+  - name: b
+    path: /tmp/dz/
+    rules:
+      - name: r
+        match:
+          extensions: [jpg]
+        action:
+          delete: true

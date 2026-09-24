@@ -27,6 +27,9 @@ var missingPathYAML []byte
 //go:embed testdata/invalid/relative_path.yml
 var relativePathYAML []byte
 
+//go:embed testdata/invalid/duplicate_path.yml
+var duplicatePathYAML []byte
+
 //go:embed testdata/invalid/empty_match.yml
 var emptyMatchYAML []byte
 
@@ -88,6 +91,7 @@ func TestParseInvalid(t *testing.T) {
 		{"bad conflict", badConflictYAML, "settings.on_conflict"},
 		{"missing path", missingPathYAML, "path is required"},
 		{"relative path", relativePathYAML, "path must be absolute"},
+		{"duplicate path", duplicatePathYAML, "duplicate path"},
 		{"empty match", emptyMatchYAML, "extensions|glob"},
 		{"empty action", emptyActionYAML, "one of move|copy|rename|run|delete is required"},
 		{"two actions in one entry", twoActionsYAML, "only one of"},

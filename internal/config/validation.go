@@ -18,6 +18,7 @@ func (c Config) Validate() error {
 		return fmt.Errorf("settings.on_conflict must be skip|overwrite|rename")
 	}
 
+	seen := map[string]int{}
 	for i, z := range c.Zones {
 		if z.Path == "" {
 			return fmt.Errorf("zones[%d]: path is required", i)
@@ -28,6 +29,10 @@ func (c Config) Validate() error {
 		if !filepath.IsAbs(z.Path) {
 			return fmt.Errorf("zones[%d]: path must be absolute", i)
 		}
+		if first, ok := seen[z.Path]; ok {
+			return fmt.Errorf("zones[%d]: duplicate path %q (also zones[%d])", i, z.Path, first)
+		}
+		seen[z.Path] = i
 		for j, r := range z.Rules {
 			switch r.OnConflict {
 			case "skip", "overwrite", "rename":
