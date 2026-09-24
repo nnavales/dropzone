@@ -12,10 +12,16 @@ import (
 	"github.com/nnavales/dropzone/internal/match"
 )
 
+// actionTimeout caps how long a single action may run.
+const actionTimeout = 30 * time.Second
+
 // handleFile routes a stable path to its zone and first matching rule.
 func (e *Engine) handleFile(ctx context.Context, path string) {
 	info, err := os.Stat(path)
 	if err != nil {
+		if !os.IsNotExist(err) {
+			slog.Warn("stat file", "path", path, "err", err)
+		}
 		return
 	}
 	if info.IsDir() {
@@ -42,8 +48,15 @@ func (e *Engine) handleFile(ctx context.Context, path string) {
 			slog.Error("build action", "zone", zone.Name, "rule", r.Name, "path", path, "err", err)
 			return
 		}
-		if err := act.Execute(ctx, path); err != nil {
-			slog.Error("execute action", "zone", zone.Name, "rule", r.Name, "path", path, "err", err)
+		actionCtx, cancel := context.WithTimeout(ctx, actionTimeout)
+		err = act.Execute(actionCtx, path)
+		cancel()
+		if err != nil {
+			if actionCtx.Err() == context.DeadlineExceeded {
+				slog.Error("action timed out", "zone", zone.Name, "rule", r.Name, "path", path)
+			} else {
+				slog.Error("execute action", "zone", zone.Name, "rule", r.Name, "path", path, "err", err)
+			}
 		} else {
 			slog.Info("rule applied", "zone", zone.Name, "rule", r.Name, "path", path)
 		}
