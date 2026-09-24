@@ -37,7 +37,7 @@ func runInit(cfgPath string) error {
 		return err
 	}
 
-	header := "# dropzone config\n# See https://github.com/nnavales/dropzone for the configuration reference.\n"
+	header := "# dropzone config\n# Full reference: https://github.com/nnavales/dropzone/blob/master/docs/configuration.md\n"
 	if err := os.MkdirAll(filepath.Dir(cfgPath), 0755); err != nil {
 		return err
 	}
