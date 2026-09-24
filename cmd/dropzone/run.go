@@ -94,6 +94,6 @@ func resolveLockPath(dev bool) string {
 		return ""
 	}
 
-	return filepath.Join(home, ".local", "state", "dropzone", "dropzoone.lock")
+	return filepath.Join(home, ".local", "state", "dropzone", "dropzone.lock")
 
 }
