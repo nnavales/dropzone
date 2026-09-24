@@ -13,6 +13,15 @@ func TestRun(t *testing.T) {
 		}
 	})
 
+	t.Run("supports shell operators", func(t *testing.T) {
+		if err := (Run{Command: "true && true"}).Execute(context.Background(), ""); err != nil {
+			t.Errorf("Execute() error = %v, want nil", err)
+		}
+		if err := (Run{Command: "false && true"}).Execute(context.Background(), ""); err == nil {
+			t.Fatal("Execute() expected error, got nil")
+		}
+	})
+
 	t.Run("fails on nonzero exit", func(t *testing.T) {
 		if err := (Run{Command: "false"}).Execute(context.Background(), ""); err == nil {
 			t.Fatal("Execute() expected error, got nil")
