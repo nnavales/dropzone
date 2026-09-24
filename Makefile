@@ -47,7 +47,7 @@ version:
 ## release: Tag and push a release, e.g. make release version=v0.2.0.
 release:
 	@version=$(version); \
-	if [ -z "$$version" ]; then \
+	case "$$version" in v*) ;; *) \
 		echo "usage: make release version=v0.2.0"; \
 		last="$$(git tag --list 'v*' --sort=-v:refname | head -n1)"; \
 		if [ -n "$$last" ]; then \
@@ -58,10 +58,13 @@ release:
 			echo "no release tags yet - suggested first: v0.1.0"; \
 		fi; \
 		exit 1; \
-	fi; \
-	case "$$version" in v*) ;; *) echo "version must start with 'v' (got: $$version)" >&2; exit 1;; esac; \
+	esac; \
 	if ! git diff --quiet || ! git diff --cached --quiet; then echo "working tree is dirty: commit changes first" >&2; exit 1; fi; \
 	if git rev-parse "$$version" >/dev/null 2>&1; then echo "tag $$version already exists" >&2; exit 1; fi; \
+	num="$$(echo "$$version" | sed 's/^v//')"; \
+	sed -i "s/^var version = \".*\"/var version = \"$$num\"/" cmd/dropzone/root.go; \
+	git add cmd/dropzone/root.go; \
+	git commit -q -m "chore: bump version to $$num"; \
 	git push origin master; \
 	git tag "$$version"; \
 	git push origin "$$version"
