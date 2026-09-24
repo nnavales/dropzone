@@ -18,7 +18,7 @@ func newRootCommand() *cobra.Command {
 	}
 	root.PersistentFlags().BoolVar(&dev, "dev", false, "run with local dev config and source logging")
 
-	root.AddCommand(newRunCommand(), newInitCommand(), newVersionCommand())
+	root.AddCommand(newRunCommand(), newInitCommand(), newVersionCommand(), newServiceCommand())
 
 	return root
 }

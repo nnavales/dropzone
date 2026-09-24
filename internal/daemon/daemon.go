@@ -111,3 +111,24 @@ func acquireLock(path string) (*os.File, error) {
 
 	return f, nil
 }
+
+// LockFree probes the lock non-destructively, return error if lock is held
+func LockFree(path string) error {
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return err
+	}
+
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0600)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	if err := syscall.Flock(int(f.Fd()), syscall.LOCK_EX|syscall.LOCK_NB); err != nil {
+		if errors.Is(err, syscall.EWOULDBLOCK) {
+			return fmt.Errorf("dropzone is already running")
+		}
+		return err
+	}
+	return nil
+}
