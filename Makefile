@@ -1,5 +1,5 @@
 BINARY_NAME  := dropzone
-MAIN_PACKAGE := ./cmd
+MAIN_PACKAGE := ./cmd/dropzone
 BUILD_DIR    := ./.local/bin
 VERSION      ?= $(shell git describe --tags --always --dirty 2>/dev/null | sed 's/^v//' || echo 0.0.1)
 ARGS         ?= --dev
